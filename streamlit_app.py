@@ -10,7 +10,7 @@ import textwrap
 asyncio.set_event_loop(asyncio.new_event_loop())
 
 def perform_question_answering(uploaded_files, question):
-    if uploaded_files:
+    if uploaded_files and len(uploaded_files) == 2:
         directory = "uploaded_documents"
         os.makedirs(directory, exist_ok=True)
         for i, uploaded_file in enumerate(uploaded_files):
@@ -40,6 +40,8 @@ def perform_question_answering(uploaded_files, question):
         response = query_engine.query(question)
 
         return response
+    else:
+        return None
 
 def main():
     st.set_page_config(page_title="Document Q&A Chatbot", page_icon="🤖", layout="wide", initial_sidebar_state="collapsed", menu_items={"Get Help": None, "Report a Bug": None})
@@ -66,17 +68,19 @@ def main():
     with col2:
         uploaded_files_2 = st.file_uploader("Upload second version", accept_multiple_files=False, type=["pdf"])
 
-    question = "I've given 2 documents doc1 and doc2 that are 2 versions of the same product.Explain the new changes introduced in the new version of the document."
+    question = "I've given 2 documents doc1 and doc2 that are 2 versions of the same product. Explain the new changes introduced in the new version of the document."
 
     if uploaded_files_1 is not None and uploaded_files_2 is not None:
         with st.spinner("Processing..."):
-            uploaded_files = [uploaded_files_1, uploaded_files_2]
+            uploaded_files = [uploaded_files_1[0], uploaded_files_2[0]]  # Accessing the first file in each list
             response = perform_question_answering(uploaded_files, question)
             if response:
                 wrapped_text = textwrap.fill(response.response, width=70)
                 st.text("Bot: " + wrapped_text) 
             else:
                 st.text("Bot: Sorry, I couldn't find an answer.")
+    else:
+        st.text("Please upload both versions of the document.")
 
 if __name__ == "__main__":
     main()
