@@ -1,1 +1,9 @@
-streamlit>=1.26.0
+streamlit
+cassandra-driver
+cassio>=0.1.1
+gradientai
+llama-index
+pypdf
+tiktoken==0.4.0
+llama-index-embeddings-gradient
+llama-index-llms-gradient
