@@ -30,16 +30,26 @@ def perform_document_comparison(uploaded_files):
         with open(os.path.join(directory, filename), "rb") as f:
             texts.append(f.read().decode("utf-8"))
 
-    diff = difflib.ndiff(texts[0].splitlines(), texts[1].splitlines())
-    return '\n'.join(diff)
+    diff = '\n'.join(difflib.ndiff(texts[0].splitlines(), texts[1].splitlines()))
+    return diff
 
 def main():
-    st.set_page_config(page_title="Document Comparison", page_icon="📄", layout="wide", initial_sidebar_state="expanded", menu_items={"Get Help": None, "Report a Bug": None})
+    st.set_page_config(page_title="Document Q&A Chatbot", page_icon="🤖", layout="wide", initial_sidebar_state="collapsed", menu_items={"Get Help": None, "Report a Bug": None})
     
-    st.title("Document Comparison")
+    st.title("Document Q&A Chatbot")
 
-    st.sidebar.title("Upload PDF Documents")
-    uploaded_files = st.sidebar.file_uploader("Upload two PDF files", accept_multiple_files=True, type=["pdf"])
+    page_bg_img = '''
+    <style>
+    body {
+    background-image: url("https://example.com/background.jpg");
+    background-size: cover;
+    }
+    </style>
+    '''
+    st.markdown(page_bg_img, unsafe_allow_html=True)
+
+    st.title("Upload PDF Documents")
+    uploaded_files = st.file_uploader("Upload two PDF files", accept_multiple_files=True, type=["pdf"])
 
     if uploaded_files:
         with st.spinner("Comparing documents..."):
