@@ -6,7 +6,6 @@ from llama_index.llms.gradient import GradientBaseModelLLM
 from llama_index.embeddings.gradient import GradientEmbedding
 import os
 import textwrap 
-import difflib
 
 asyncio.set_event_loop(asyncio.new_event_loop())
 
@@ -41,7 +40,7 @@ def perform_question_answering(uploaded_files, question):
         response = query_engine.query(question)
 
         return response
-        
+
 def main():
     st.set_page_config(page_title="Document Q&A Chatbot", page_icon="🤖", layout="wide", initial_sidebar_state="collapsed", menu_items={"Get Help": None, "Report a Bug": None})
     
@@ -58,16 +57,25 @@ def main():
     st.markdown(page_bg_img, unsafe_allow_html=True)
 
     st.title("Upload PDF Documents")
-    uploaded_files = st.file_uploader("Upload two PDF files", accept_multiple_files=True, type=["pdf"])
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        uploaded_files_1 = st.file_uploader("Upload first version", accept_multiple_files=False, type=["pdf"])
+
+    with col2:
+        uploaded_files_2 = st.file_uploader("Upload second version", accept_multiple_files=False, type=["pdf"])
+
     question = "Explain the changes introduced in the new version of the document."
 
-    if uploaded_files:
-        with st.spinner("Comparing documents..."):
+    if uploaded_files_1 and uploaded_files_2:
+        with st.spinner("Processing..."):
+            # Perform question answering
+            uploaded_files = [uploaded_files_1[0], uploaded_files_2[0]]
             response = perform_question_answering(uploaded_files, question)
             if response:
                 wrapped_text = textwrap.fill(response.response, width=70)
                 st.text("Bot: " + wrapped_text) 
-                question = ""  
             else:
                 st.text("Bot: Sorry, I couldn't find an answer.")
 
