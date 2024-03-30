@@ -3,15 +3,11 @@ import difflib
 import textwrap
 
 def perform_document_comparison(doc1, doc2):
-    # Read the content of the documents
     content1 = doc1.read().decode('utf-8')
     content2 = doc2.read().decode('utf-8')
-    
-    # Perform a comparison
+
     differ = difflib.Differ()
     diff = list(differ.compare(content1.splitlines(), content2.splitlines()))
-    
-    # Convert the differences to a human-readable format
     diff_text = '\n'.join(diff)
     
     return diff_text
