@@ -66,11 +66,10 @@ def main():
     with col2:
         uploaded_files_2 = st.file_uploader("Upload second version", accept_multiple_files=False, type=["pdf"])
 
-    question = "Explain the changes introduced in the new version of the document."
+    question = "I've given 2 documents doc1 and doc2 that are 2 versions of the same product.Explain the new changes introduced in the new version of the document."
 
     if uploaded_files_1 is not None and uploaded_files_2 is not None:
         with st.spinner("Processing..."):
-            # Perform question answering
             uploaded_files = [uploaded_files_1, uploaded_files_2]
             response = perform_question_answering(uploaded_files, question)
             if response:
