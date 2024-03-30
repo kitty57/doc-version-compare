@@ -21,9 +21,8 @@ def main():
     
     st.title("Document Comparison")
 
-    st.sidebar.title("Upload PDF Documents")
-    uploaded_file1 = st.sidebar.file_uploader("Upload the first PDF document", type=["pdf"])
-    uploaded_file2 = st.sidebar.file_uploader("Upload the second PDF document", type=["pdf"])
+    uploaded_file1 = st.file_uploader("Upload the first PDF document", type=["pdf"])
+    uploaded_file2 = st.file_uploader("Upload the second PDF document", type=["pdf"])
 
     if st.button("Compare Documents"):
         if uploaded_file1 and uploaded_file2:
