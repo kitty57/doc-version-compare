@@ -68,10 +68,10 @@ def main():
 
     question = "Explain the changes introduced in the new version of the document."
 
-    if uploaded_files_1 and uploaded_files_2:
+    if uploaded_files_1 is not None and uploaded_files_2 is not None:
         with st.spinner("Processing..."):
             # Perform question answering
-            uploaded_files = [uploaded_files_1[0], uploaded_files_2[0]]
+            uploaded_files = [uploaded_files_1, uploaded_files_2]
             response = perform_question_answering(uploaded_files, question)
             if response:
                 wrapped_text = textwrap.fill(response.response, width=70)
