@@ -5,27 +5,42 @@ from llama_index.core import ServiceContext, set_global_service_context
 from llama_index.llms.gradient import GradientBaseModelLLM
 from llama_index.embeddings.gradient import GradientEmbedding
 import os
-import textwrap 
+import textwrap
 
 asyncio.set_event_loop(asyncio.new_event_loop())
 
+
 def perform_question_answering(uploaded_files, question):
-    if uploaded_files and len(uploaded_files) == 2:
-        directory = "uploaded_documents"
-        os.makedirs(directory, exist_ok=True)
+    if uploaded_files:
+        # Create directory with proper error handling
+        try:
+            directory = "uploaded_documents"
+            os.makedirs(directory, exist_ok=True)  # Create only if it doesn't exist
+        except OSError as e:
+            print(f"Error creating directory: {e}")
+            st.error("Error: Couldn't create directory for uploaded files.")
+            return None
+
         for i, uploaded_file in enumerate(uploaded_files):
             with open(os.path.join(directory, f"document_{i}.pdf"), "wb") as f:
                 f.write(uploaded_file.getbuffer())
 
-        llm = GradientBaseModelLLM(
-            base_model_slug="llama2-7b-chat",
-            max_tokens=400,
-        )
-        embed_model = GradientEmbedding(
-            gradient_access_token=st.secrets["GRADIENT_ACCESS_TOKEN"],
-            gradient_workspace_id=st.secrets["GRADIENT_WORKSPACE_ID"],
-            gradient_model_slug="bge-large",
-        )
+        # Initialize models with proper error handling (wrap in try-except)
+        try:
+            llm = GradientBaseModelLLM(
+                base_model_slug="llama2-7b-chat",
+                max_tokens=400,
+            )
+            embed_model = GradientEmbedding(
+                gradient_access_token=st.secrets["GRADIENT_ACCESS_TOKEN"],
+                gradient_workspace_id=st.secrets["GRADIENT_WORKSPACE_ID"],
+                gradient_model_slug="bge-large",
+            )
+        except Exception as e:
+            print(f"Error initializing models: {e}")
+            st.error("Error: Couldn't initialize the models. Check configurations.")
+            return None
+
         service_context = ServiceContext.from_defaults(
             llm=llm,
             embed_model=embed_model,
@@ -40,12 +55,10 @@ def perform_question_answering(uploaded_files, question):
         response = query_engine.query(question)
 
         return response
-    else:
-        return None
 
 def main():
-    st.set_page_config(page_title="Document Q&A Chatbot", page_icon="🤖", layout="wide", initial_sidebar_state="collapsed", menu_items={"Get Help": None, "Report a Bug": None})
-    
+    st.set_page_config(page_title="Document Q&A Chatbot", page_icon="", layout="wide", initial_sidebar_state="collapsed", menu_items={"Get Help": None, "Report a Bug": None})
+
     st.title("Document Q&A Chatbot")
 
     page_bg_img = '''
@@ -72,15 +85,13 @@ def main():
 
     if uploaded_files_1 is not None and uploaded_files_2 is not None:
         with st.spinner("Processing..."):
-            uploaded_files = [uploaded_files_1[0], uploaded_files_2[0]]  # Accessing the first file in each list
+            uploaded_files = [uploaded_files_1, uploaded_files_2]
             response = perform_question_answering(uploaded_files, question)
             if response:
                 wrapped_text = textwrap.fill(response.response, width=70)
-                st.text("Bot: " + wrapped_text) 
+                st.text("Bot: " + wrapped_text)
             else:
                 st.text("Bot: Sorry, I couldn't find an answer.")
-    else:
-        st.text("Please upload both versions of the document.")
 
 if __name__ == "__main__":
     main()
