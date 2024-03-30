@@ -10,20 +10,19 @@ import textwrap
 asyncio.set_event_loop(asyncio.new_event_loop())
 
 
-def perform_question_answering(uploaded_files, question):
-    if uploaded_files:
-        # Create directory with proper error handling
-        try:
-            directory = "uploaded_documents"
-            os.makedirs(directory, exist_ok=True)  # Create only if it doesn't exist
-        except OSError as e:
-            print(f"Error creating directory: {e}")
-            st.error("Error: Couldn't create directory for uploaded files.")
-            return None
+async def perform_question_answering(uploaded_files, question):
+    if not uploaded_files:
+        return None
 
-        for i, uploaded_file in enumerate(uploaded_files):
-            with open(os.path.join(directory, f"document_{i}.pdf"), "wb") as f:
-                f.write(uploaded_file.getbuffer())
+    try:
+        # Create directory with proper error handling
+        directory = "uploaded_documents"
+        os.makedirs(directory, exist_ok=True)
+
+        # Save files asynchronously (improves performance)
+        tasks = [asyncio.create_task(save_file(os.path.join(directory, f"document_{i}.pdf"), uploaded_file))
+                 for i, uploaded_file in enumerate(uploaded_files)]
+        await asyncio.gather(*tasks)
 
         # Initialize models with proper error handling (wrap in try-except)
         try:
@@ -53,8 +52,16 @@ def perform_question_answering(uploaded_files, question):
         query_engine = vector_store_index.as_query_engine()
 
         response = query_engine.query(question)
-
         return response
+    except Exception as e:
+        print(f"Error processing documents: {e}")
+        st.error("Error: An unexpected error occurred during processing.")
+        return None
+
+async def save_file(filepath, uploaded_file):
+    with open(filepath, "wb") as f:
+        await f.write(uploaded_file.getbuffer())
+
 
 def main():
     st.set_page_config(page_title="Document Q&A Chatbot", page_icon="", layout="wide", initial_sidebar_state="collapsed", menu_items={"Get Help": None, "Report a Bug": None})
@@ -86,12 +93,10 @@ def main():
     if uploaded_files_1 is not None and uploaded_files_2 is not None:
         with st.spinner("Processing..."):
             uploaded_files = [uploaded_files_1, uploaded_files_2]
-            response = perform_question_answering(uploaded_files, question)
+            response = asyncio.run(perform_question_answering(uploaded_files, question))
             if response:
                 wrapped_text = textwrap.fill(response.response, width=70)
                 st.text("Bot: " + wrapped_text)
             else:
-                st.text("Bot: Sorry, I couldn't find an answer.")
+                st.text("Bot: Sorry, I couldn't find an answer in the documents.")
 
-if __name__ == "__main__":
-    main()
