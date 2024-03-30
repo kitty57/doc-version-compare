@@ -11,10 +11,10 @@ asyncio.set_event_loop(asyncio.new_event_loop())
 
 async def extract_text_async(pdf_file):
     with open(pdf_file, "rb") as pdf_reader:
-      pdf = PdfReader(pdf_reader)
-      text = ""
-      for page in pdf.pages:
-        text += page.extract_text()
+        pdf = PdfReader(pdf_reader)
+        text = ""
+        for page in pdf.pages:
+            text += page.extract_text()
     return text
 
 def generate_summary(text):
