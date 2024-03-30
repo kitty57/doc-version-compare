@@ -7,3 +7,4 @@ pypdf
 tiktoken==0.4.0
 llama-index-embeddings-gradient
 llama-index-llms-gradient
+sumy
