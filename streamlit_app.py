@@ -66,18 +66,6 @@ async def save_file(filepath, uploaded_file):
 def main():
     st.set_page_config(page_title="Document Q&A Chatbot", page_icon="", layout="wide", initial_sidebar_state="collapsed", menu_items={"Get Help": None, "Report a Bug": None})
 
-    st.title("Document Q&A Chatbot")
-
-    page_bg_img = '''
-    <style>
-    body {
-    background-image: url("https://example.com/background.jpg");
-    background-size: cover;
-    }
-    </style>
-    '''
-    st.markdown(page_bg_img, unsafe_allow_html=True)
-
     st.title("Upload PDF Documents")
 
     col1, col2 = st.columns(2)
