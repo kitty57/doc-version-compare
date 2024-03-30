@@ -23,8 +23,8 @@ def perform_question_answering(uploaded_files, question):
             max_tokens=400,
         )
         embed_model = GradientEmbedding(
-            gradient_access_token=st.secrets["GRADIENT_ACCESS_TOKEN"],
-            gradient_workspace_id=st.secrets["GRADIENT_WORKSPACE_ID"],
+            gradient_access_token='VqgYGFvkpiYCc00NlKoCUDPxFGTQPYwN',
+            gradient_workspace_id='01cded86-e9ad-481e-8809-dc29d22725cd_workspace',
             gradient_model_slug="bge-large",
         )
         service_context = ServiceContext.from_defaults(
