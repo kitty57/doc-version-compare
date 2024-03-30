@@ -1,5 +1,6 @@
 import streamlit as st
 import difflib
+import textwrap
 
 def perform_document_comparison(doc1, doc2):
     # Read the content of the documents
@@ -30,7 +31,9 @@ def main():
                 diff_text = perform_document_comparison(uploaded_file1, uploaded_file2)
                 if diff_text:
                     st.text("Differences between the documents:")
-                    st.text(diff_text)
+                    # Wrap the text to ensure it fits within the display width
+                    wrapped_text = textwrap.fill(diff_text, width=70)
+                    st.text(wrapped_text)
                 else:
                     st.text("No differences found between the documents.")
         else:
